@@ -1,16 +1,16 @@
-package com.simpleclub.android.framework.impl
+package com.simpleclub.firebase_rest_auth.framework.impl
 
-import android.app.Activity
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.internal.IdTokenListener
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuth
-import com.simpleclub.android.core.data.source.AuthDataSource
-import com.simpleclub.android.core.domain.user.AuthUser
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuth
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
+import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
+import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
 
-class AuthDataSourceImpl : AuthDataSource {
+class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 
-	private val mRestAuth = FirebaseRestAuth.getInstance(FirebaseApp.getInstance())
+	private val mRestAuth = FirebaseRestAuth.getInstance(app)
 	private val idTokenListeners = mutableMapOf<AuthDataSource.AuthStateListener, IdTokenListener>()
 
 	override fun addAuthStateListener(authStateListener: AuthDataSource.AuthStateListener) {
@@ -24,7 +24,7 @@ class AuthDataSourceImpl : AuthDataSource {
 		idTokenListeners[authStateListener]?.let { mRestAuth.removeIdTokenListener(it) }
 	}
 
-	override fun signInWithCustomToken(token: String): Task<*> {
+	override fun signInWithCustomToken(token: String): Task<SignInWithCustomTokenResponse> {
 		return mRestAuth.signInWithCustomToken(token)
 	}
 
@@ -45,7 +45,12 @@ class AuthDataSourceImpl : AuthDataSource {
 			AuthUser(
 					uid = it.userId,
 					isAnonymous = it.isAnonymous,
-					providerId = "hms"
+					email = it.email,
+					emailVerified = it.emailVerified,
+					name = it.name,
+					picture = it.picture,
+					providerId = it.providerId,
+					providerInfo = it.providerInfo
 			)
 		}
 	}
@@ -53,4 +58,5 @@ class AuthDataSourceImpl : AuthDataSource {
 	override suspend fun getIdToken(): String? {
 		return mRestAuth.currentUser?.idToken
 	}
+
 }

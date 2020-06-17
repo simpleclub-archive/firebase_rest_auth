@@ -1,4 +1,4 @@
-package com.simpleclub.android.core.data.rest.models.identitytoolkit
+package com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit
 
 class SignInWithEmailResponse(
     val idToken: String = "",       // A Firebase Auth ID token for the newly created user

@@ -1,4 +1,4 @@
-package com.simpleclub.android.core.data.rest.models.identitytoolkit
+package com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit
 
 data class SignInWithEmailRequest(
     val email: String,                      // The email the user is signing in with

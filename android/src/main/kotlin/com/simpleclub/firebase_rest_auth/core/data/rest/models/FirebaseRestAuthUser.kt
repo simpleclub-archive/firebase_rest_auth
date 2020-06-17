@@ -1,25 +1,42 @@
-package com.simpleclub.android.core.data.rest.models
+package com.simpleclub.firebase_rest_auth.core.data.rest.models
 
-import com.simpleclub.android.framework.rest.utils.IdTokenParser
+import android.util.Log
+import com.simpleclub.firebase_rest_auth.framework.rest.utils.IdTokenParser
 
+@Suppress("UNCHECKED_CAST")
 class FirebaseRestAuthUser(
-    val idToken: String,
-    val refreshToken: String,
-    val isAnonymous: Boolean = false
+		val idToken: String,
+		val refreshToken: String,
+		val isAnonymous: Boolean = false
 ) {
 
-    val userId: String
-    val expirationTime: Long
+	val userId: String
+	val expirationTime: Long
+	val name: String?
+	val picture: String?
+	val email: String?
+	val emailVerified: Boolean?
+	val providerId: String?
+	val providerInfo: Map<String, Any>?
 
-    init {
-        val claims = IdTokenParser.parseIdToken(this.idToken)
+	init {
+		val claims = IdTokenParser.parseIdToken(this.idToken)
 
-        this.userId = claims["user_id"].toString()
-        this.expirationTime = claims["exp"].toString().toLong()
-    }
+		this.userId = claims["user_id"].toString()
+		this.expirationTime = claims["exp"].toString().toLong()
+		this.name = claims["name"]?.toString()
+		this.picture = claims["picture"]?.toString()
+		this.email = claims["email"]?.toString()
+		this.emailVerified = claims["email_verified"]?.toString()?.toBoolean()
 
-    override fun toString(): String {
-        return "RestAuthUser(userId=$userId, expiresAt=$expirationTime, isAnonymous=$isAnonymous)"
-    }
+		val firebase = claims["firebase"] as? Map<String, Any>
+		this.providerId = firebase?.get("sign_in_provider")?.toString()
+		this.providerInfo = firebase?.get("identities") as? Map<String, Any>
+	}
+
+	override fun toString(): String {
+		return "FirebaseRestAuthUser(idToken='$idToken', refreshToken='$refreshToken', isAnonymous=$isAnonymous, userId='$userId', expirationTime=$expirationTime, name='$name', picture='$picture', email='$email', emailVerified=$emailVerified, providerId='$providerId', providerInfo=$providerInfo)"
+	}
+
 
 }

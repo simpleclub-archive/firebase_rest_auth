@@ -1,4 +1,4 @@
-package com.simpleclub.android.framework.rest
+package com.simpleclub.firebase_rest_auth.framework.rest
 
 import androidx.annotation.Keep
 import com.google.firebase.FirebaseApp
@@ -6,7 +6,7 @@ import com.google.firebase.auth.internal.InternalAuthProvider
 import com.google.firebase.components.Component
 import com.google.firebase.components.ComponentRegistrar
 import com.google.firebase.components.Dependency
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuth
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuth
 
 /**
  * Required so other Firebase libraries can find this implementation of InternalAuthProvider.

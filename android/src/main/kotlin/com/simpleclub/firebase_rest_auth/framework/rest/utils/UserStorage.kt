@@ -1,9 +1,9 @@
-package com.simpleclub.android.framework.rest.utils
+package com.simpleclub.firebase_rest_auth.framework.rest.utils
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.firebase.FirebaseApp
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuthUser
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuthUser
 
 class UserStorage(context: Context, private val app: FirebaseApp) {
 

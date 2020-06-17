@@ -1,4 +1,4 @@
-package com.simpleclub.android.framework.rest
+package com.simpleclub.firebase_rest_auth.framework.rest
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
@@ -9,17 +9,17 @@ import com.google.firebase.auth.internal.IdTokenListener
 import com.google.firebase.internal.InternalTokenResult
 import com.google.firebase.internal.api.FirebaseNoSignedInUserException
 import com.google.firebase.nongmsauth.api.service.FirebaseKeyInterceptor
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuth
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuthUser
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.*
-import com.simpleclub.android.core.data.rest.models.securetoken.ExchangeTokenRequest
-import com.simpleclub.android.core.data.rest.models.securetoken.ExchangeTokenResponse
-import com.simpleclub.android.core.data.rest.models.service.IdentityToolkitApi
-import com.simpleclub.android.core.data.rest.models.service.SecureTokenApi
-import com.simpleclub.android.framework.rest.utils.ExpirationUtils
-import com.simpleclub.android.framework.rest.utils.IdTokenParser
-import com.simpleclub.android.framework.rest.utils.RetrofitUtils
-import com.simpleclub.android.framework.rest.utils.UserStorage
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuth
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuthUser
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.*
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.securetoken.ExchangeTokenRequest
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.securetoken.ExchangeTokenResponse
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.service.IdentityToolkitApi
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.service.SecureTokenApi
+import com.simpleclub.firebase_rest_auth.framework.rest.utils.ExpirationUtils
+import com.simpleclub.firebase_rest_auth.framework.rest.utils.IdTokenParser
+import com.simpleclub.firebase_rest_auth.framework.rest.utils.RetrofitUtils
+import com.simpleclub.firebase_rest_auth.framework.rest.utils.UserStorage
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

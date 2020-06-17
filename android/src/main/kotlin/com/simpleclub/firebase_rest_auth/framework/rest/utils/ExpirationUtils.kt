@@ -1,6 +1,6 @@
-package com.simpleclub.android.framework.rest.utils
+package com.simpleclub.firebase_rest_auth.framework.rest.utils
 
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuthUser
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuthUser
 import java.util.*
 
 class ExpirationUtils {

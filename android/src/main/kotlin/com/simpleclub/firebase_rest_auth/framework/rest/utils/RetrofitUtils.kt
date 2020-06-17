@@ -1,4 +1,4 @@
-package com.simpleclub.android.framework.rest.utils
+package com.simpleclub.firebase_rest_auth.framework.rest.utils
 
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource

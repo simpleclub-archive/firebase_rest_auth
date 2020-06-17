@@ -1,4 +1,4 @@
-package com.simpleclub.android.core.data.rest.models.securetoken
+package com.simpleclub.firebase_rest_auth.core.data.rest.models.securetoken
 
 data class ExchangeTokenResponse(
     var expires_in: String = "",

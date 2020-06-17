@@ -1,4 +1,4 @@
-package com.simpleclub.android.framework.rest
+package com.simpleclub.firebase_rest_auth.framework.rest
 
 import android.os.Handler
 import android.util.Log
@@ -9,8 +9,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.firebase.auth.internal.IdTokenListener
 import com.google.firebase.internal.InternalTokenResult
-import com.simpleclub.android.core.data.rest.models.FirebaseRestAuth
-import com.simpleclub.android.framework.rest.utils.ExpirationUtils
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuth
+import com.simpleclub.firebase_rest_auth.framework.rest.utils.ExpirationUtils
 
 class FirebaseTokenRefresher(val auth: FirebaseRestAuth) :
     IdTokenListener, LifecycleObserver {

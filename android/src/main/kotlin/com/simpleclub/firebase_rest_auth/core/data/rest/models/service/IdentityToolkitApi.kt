@@ -1,12 +1,12 @@
-package com.simpleclub.android.core.data.rest.models.service
+package com.simpleclub.firebase_rest_auth.core.data.rest.models.service
 
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignInAnonymouslyRequest
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignInWithCustomTokenRequest
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignInWithEmailRequest
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignInWithEmailResponse
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignInAnonymouslyResponse
-import com.simpleclub.android.core.data.rest.models.identitytoolkit.SignUpWithEmailResponse
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInAnonymouslyRequest
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenRequest
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithEmailRequest
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithEmailResponse
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInAnonymouslyResponse
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignUpWithEmailResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
