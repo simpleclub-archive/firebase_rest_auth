@@ -9,7 +9,6 @@ import android.util.SparseArray
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
-import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource.AuthStateListener
 import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
@@ -94,8 +93,27 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 		when (call.method) {
 			"startListeningAuthState" -> handleStartListeningAuthState(call, result, auth)
 			"signInWithCustomToken" -> handleSignInWithCustomToken(call, result, auth)
+			"signInWithCredential" -> handleSignInWithCredential(call, result, auth)
 			else -> result.notImplemented()
 		}
+	}
+
+	@Suppress("UNCHECKED_CAST")
+	private fun handleSignInWithCredential(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
+		// {app=[DEFAULT], data={password=, email=}, provider=password}
+		val credential = call.arguments<Any>() as Map<String?, Any?>
+		if (credential["provider"] != "password") {
+			result.notImplemented()
+			return
+		}
+		val data = credential["data"] as Map<String?, Any?>
+		val email = data["email"]
+		val password = data["password"]
+		if (email !is String || password !is String) {
+			result.error("NO_CREDENTIALS_PROVIDED", "email or password not found", null)
+			return
+		}
+		auth.signInWithEmail(email, password).addOnCompleteListener(SignInCompleteListener(result, auth))
 	}
 
 	private fun handleSignInWithCustomToken(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
@@ -162,8 +180,8 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 		}
 	}
 
-	private class SignInCompleteListener internal constructor(private val result: MethodChannel.Result, private val auth: AuthDataSource) : OnCompleteListener<SignInWithCustomTokenResponse?> {
-		override fun onComplete(task: Task<SignInWithCustomTokenResponse?>) {
+	private class SignInCompleteListener<T> internal constructor(private val result: MethodChannel.Result, private val auth: AuthDataSource) : OnCompleteListener<T?> {
+		override fun onComplete(task: Task<T?>) {
 			if (!task.isSuccessful || task.result == null) {
 				val exception = task.exception!!
 				result.error(exception::class.java.simpleName, exception.localizedMessage, null);

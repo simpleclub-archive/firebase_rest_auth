@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.internal.IdTokenListener
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuth
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithEmailResponse
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
 import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
 
@@ -28,7 +29,7 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 		return mRestAuth.signInWithCustomToken(token)
 	}
 
-	override fun signInWithEmail(email: String, password: String): Task<*> {
+	override fun signInWithEmail(email: String, password: String): Task<SignInWithEmailResponse> {
 		return mRestAuth.signInWithEmail(email, password)
 	}
 
