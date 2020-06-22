@@ -94,6 +94,7 @@ therefore it currently shares the same limitations as described in the disclaime
 
 Implemented methods of `firebase_auth` are:
 
+* `currentUser()`
 * `signInWithCustomToken({@required String token})`
 * `signInWithEmailAndPassword({@required String email, @required String password})`
 * `get onAuthStateChanged`

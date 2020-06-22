@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/firebase_rest_auth.iml" filepath="$PROJECT_DIR$/.idea/modules/firebase_rest_auth.iml" group="firebase_rest_auth" />
-    </modules>
-  </component>
-</project>
