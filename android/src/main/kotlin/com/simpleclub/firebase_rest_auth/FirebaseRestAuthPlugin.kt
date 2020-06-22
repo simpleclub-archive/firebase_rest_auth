@@ -91,11 +91,23 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 	override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
 		val auth = getAuth(call)
 		when (call.method) {
+			"currentUser" -> handleCurrentUser(call, result, auth)
 			"startListeningAuthState" -> handleStartListeningAuthState(call, result, auth)
 			"signInWithCustomToken" -> handleSignInWithCustomToken(call, result, auth)
 			"signInWithCredential" -> handleSignInWithCredential(call, result, auth)
+			"signOut" -> handleSignOut(call, result, auth)
 			else -> result.notImplemented()
 		}
+	}
+
+	private fun handleCurrentUser(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
+		val user = auth.getUser()
+		if (user == null) {
+			result.success(null)
+			return
+		}
+		val userMap = mapFromUser(user)
+		result.success(userMap)
 	}
 
 	@Suppress("UNCHECKED_CAST")
@@ -144,6 +156,11 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 		getAuth(call).addAuthStateListener(listener)
 		authStateListeners?.append(handle, listener)
 		result.success(handle)
+	}
+
+	private fun handleSignOut(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
+		auth.signOut()
+		result.success(null)
 	}
 
 	companion object {
