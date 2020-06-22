@@ -10,7 +10,6 @@ _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#cod
 
 ## Getting the code and configuring your environment
 
-
  * Ensure all the dependencies described in the previous section are installed.
  * Fork `https://github.com/simpleclub/firebase_rest_auth` into your own GitHub account. If
    you already have a fork, and are now installing a development environment on
@@ -57,9 +56,7 @@ To send us a pull request:
 
 Please make sure all your checkins have detailed commit messages explaining the patch.
 
-Plugins tests are run automatically on contributions. However, due to
-cost constraints, pull requests from non-committers may not run all the tests
-automatically.
+Plugins tests are run automatically on contributions.
 
 Once you've gotten an LGTM from a project maintainer and once your PR has received
 the green light from all our automated testing, wait for one the package maintainers

@@ -1,6 +1,6 @@
 # firebase_rest_auth
 
-[![pub package](https://img.shields.io/pub/v/firebase_rest_auth.svg)](https://pub.dartlang.org/packages/url_launcher)
+[![pub package](https://img.shields.io/pub/v/firebase_rest_auth.svg)](https://pub.dartlang.org/packages/firebase_rest_auth)
 
 > Notice: The plugin is currently in development. See Limitations below for supported features. 
 >
