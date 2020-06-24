@@ -64,5 +64,5 @@ to merge the pull request and `pub submit` any affected packages.
 
 ## Contributor License Agreement
 
-We require contributors to sign our [Contributor License Agreement (CLA)](https://simpleclub.page.link). 
+We require contributors to sign our [Contributor License Agreement (CLA)](https://simpleclub.page.link/cla). 
 In order for us to review and merge your code, please follow the link and sign it.
