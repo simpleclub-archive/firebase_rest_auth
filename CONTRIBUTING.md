@@ -6,7 +6,7 @@ _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#cod
 
  * Linux, Mac OS X, or Windows.
  * git (used for source version control).
- * An ssh client (used to authenticate with GitHub).
+ * ssh client (used to authenticate with GitHub).
 
 ## Getting the code and configuring your environment
 
@@ -15,7 +15,7 @@ _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#cod
    you already have a fork, and are now installing a development environment on
    a new machine, make sure you've updated your fork so that you don't use stale
    configuration options from long ago.
- * If you haven't configured your machine with an SSH key that's known to github, then
+ * If you haven't configured your machine with an SSH key known to github, then
    follow [GitHub's directions](https://help.github.com/articles/generating-ssh-keys/)
    to generate an SSH key.
  * `git clone git@github.com:<your_name_here>/firebase_rest_auth.git`
@@ -54,10 +54,15 @@ To send us a pull request:
   go to `https://github.com/simpleclub/firebase_rest_auth` and click the
   "Compare & pull request" button
 
-Please make sure all your checkins have detailed commit messages explaining the patch.
+Please make sure all your check-ins have detailed commit messages explaining the patch.
 
 Plugins tests are run automatically on contributions.
 
 Once you've gotten an LGTM from a project maintainer and once your PR has received
 the green light from all our automated testing, wait for one the package maintainers
 to merge the pull request and `pub submit` any affected packages.
+
+## Contributor License Agreement
+
+We require contributors to sign our [Contributor License Agreement (CLA)](https://simpleclub.page.link). 
+In order for us to review and merge your code, please follow the link and sign it.
