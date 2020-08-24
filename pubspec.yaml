@@ -1,10 +1,10 @@
 name: firebase_rest_auth
 description: Package for Firebase REST authentication within Flutter apps, no GMS required.
-version: 0.1.0+1
+version: 0.2.0
 homepage: https://github.com/simpleclub/firebase_rest_auth
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.9.0 <3.0.0"
   flutter: ">=1.10.0"
 
 dependencies:

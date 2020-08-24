@@ -142,6 +142,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 		when (call.method) {
 			"Auth#registerChangeListeners" -> registerChangeListeners(call.arguments())
 			"Auth#signInWithCustomToken" -> signInWithCustomToken(call.arguments())
+			"Auth#signInAnonymously" -> signInAnonymously(call.arguments())
 			"Auth#signOut" -> signOut(call.arguments())
 			else -> {
 				result.notImplemented()
@@ -168,6 +169,17 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 					val auth = getAuth(arguments)
 					auth.signOut()
 					null
+				}
+		)
+	}
+
+	private fun signInAnonymously(arguments: Map<String, Any>): Task<Map<String, Any?>> {
+		return Tasks.call(
+				cachedThreadPool,
+				Callable {
+					val auth = getAuth(arguments)
+					Tasks.await(auth.signInAnonymously())
+					parseAuthResult(auth)
 				}
 		)
 	}

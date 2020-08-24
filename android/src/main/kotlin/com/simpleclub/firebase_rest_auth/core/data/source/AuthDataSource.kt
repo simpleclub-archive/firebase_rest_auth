@@ -15,6 +15,7 @@ interface AuthDataSource {
 	fun signInWithCustomToken(token: String): Task<SignInWithCustomTokenResponse>
 	fun signInWithEmail(email: String, password: String): Task<SignInWithEmailResponse>
 	fun signInWithCredential(credential: Any): Task<*>
+	fun signInAnonymously(): Task<*>
 	fun signOut()
 	fun getUser(): AuthUser?
 

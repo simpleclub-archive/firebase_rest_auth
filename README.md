@@ -94,6 +94,7 @@ therefore it currently shares the same limitations as described in the disclaime
 
 Implemented methods of `firebase_auth` are:
 
+* `signInAnonymously()`
 * `signInWithCustomToken({@required String token})`
 * `get onAuthStateChanged`
 * `signOut()`

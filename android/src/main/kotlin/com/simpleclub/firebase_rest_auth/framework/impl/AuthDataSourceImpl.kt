@@ -33,6 +33,10 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 		return mRestAuth.signInWithEmail(email, password)
 	}
 
+	override fun signInAnonymously(): Task<*> {
+		return mRestAuth.signInAnonymously()
+	}
+
 	override fun signInWithCredential(credential: Any): Task<*> {
 		throw IllegalStateException("implementation not supported with RestAuth")
 	}
