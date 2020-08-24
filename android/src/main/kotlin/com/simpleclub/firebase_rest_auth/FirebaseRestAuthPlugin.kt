@@ -4,11 +4,13 @@
 package com.simpleclub.firebase_rest_auth
 
 import android.app.Activity
-import android.content.Context
-import android.util.SparseArray
+import android.util.Log
+import androidx.annotation.Nullable
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.internal.IdTokenListener
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource.AuthStateListener
 import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
@@ -20,8 +22,12 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugins.firebase.core.FlutterFirebasePlugin
+import io.flutter.plugins.firebase.core.FlutterFirebasePlugin.cachedThreadPool
+import io.flutter.plugins.firebase.core.FlutterFirebasePluginRegistry.registerPlugin
 import okhttp3.internal.toImmutableList
 import okhttp3.internal.toImmutableMap
+import java.util.concurrent.Callable
 
 
 /**
@@ -30,7 +36,8 @@ import okhttp3.internal.toImmutableMap
  */
 class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 
-	private var authStateListeners: SparseArray<AuthStateListener>? = null
+	private var authStateListeners: MutableMap<String, AuthStateListener>? = null
+	private var idTokenListeners: MutableMap<String, IdTokenListener>? = null
 
 	// private SparseArray<ForceResendingToken> forceResendingTokens;
 	private var channel: MethodChannel? = null
@@ -41,26 +48,38 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 	// Handles are ints used as indexes into the sparse array of active observers
 	private var nextHandle = 0
 
-	private fun initInstance(messenger: BinaryMessenger, context: Context) {
-		channel = MethodChannel(messenger, "plugins.flutter.io/firebase_auth")
-		FirebaseApp.initializeApp(context)
+	private fun initInstance(messenger: BinaryMessenger) {
+		val channelName = "plugins.flutter.io/firebase_auth"
+		channel = MethodChannel(messenger, channelName)
 		channel!!.setMethodCallHandler(this)
-		authStateListeners = SparseArray()
-		// forceResendingTokens = new SparseArray<>();
+
+		authStateListeners = HashMap()
+		idTokenListeners = HashMap()
 	}
 
-	// Only access activity with this method.
-	fun getActivity(): Activity {
-		return activity!!
+	private fun getMethodChannelResultHandler(method: String): MethodChannel.Result? {
+		return object : MethodChannel.Result {
+			override fun success(@Nullable result: Any?) {
+				// Noop
+			}
+
+			override fun notImplemented() {
+				Log.e(Constants.TAG, "$method has not been implemented")
+			}
+
+			override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
+				Log.e(Constants.TAG, "$method error ($errorCode): $errorMessage")
+			}
+		}
 	}
 
 	override fun onAttachedToEngine(binding: FlutterPluginBinding) {
-		initInstance(binding.binaryMessenger, binding.applicationContext)
+		initInstance(binding.binaryMessenger)
 	}
 
 	override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-		authStateListeners = null
-		// forceResendingTokens = null;
+		removeEventListeners()
+
 		channel!!.setMethodCallHandler(null)
 		channel = null
 	}
@@ -81,33 +100,46 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 		activity = null
 	}
 
-	private fun getAuth(call: MethodCall): AuthDataSource {
-		val arguments = call.arguments<Map<String, Any>>()
-		val appName = arguments["app"] as String?
-		val app = FirebaseApp.getInstance(appName!!)
+	// Ensure any listeners are removed when the app
+	// is detached from the FlutterEngine
+	private fun removeEventListeners() {
+		authStateListeners?.keys?.forEach {
+			authStateListeners?.get(it)?.let { listener -> getAuth(mapOf(Constants.APP_NAME to it)).removeAuthStateListener(listener) }
+		}
+		idTokenListeners?.keys?.forEach {
+			idTokenListeners?.get(it)?.let { listener -> getAuth(mapOf(Constants.APP_NAME to it)).removeIdTokenListener(listener) }
+		}
+		authStateListeners = null;
+		idTokenListeners = null;
+	}
+
+	private fun getAuth(arguments: Map<String, Any>): AuthDataSource {
+		val appName = arguments[Constants.APP_NAME] as String
+		val app = FirebaseApp.getInstance(appName)
 		return AuthDataSource.getInstance(app)
 	}
 
 	override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-		val auth = getAuth(call)
-		when (call.method) {
-			"currentUser" -> handleCurrentUser(call, result, auth)
-			"startListeningAuthState" -> handleStartListeningAuthState(call, result, auth)
-			"signInWithCustomToken" -> handleSignInWithCustomToken(call, result, auth)
-			"signInWithCredential" -> handleSignInWithCredential(call, result, auth)
-			"signOut" -> handleSignOut(call, result, auth)
-			else -> result.notImplemented()
-		}
-	}
+		Log.d(this.javaClass.toString(), "Method call: ${call.method}")
 
-	private fun handleCurrentUser(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
-		val user = auth.getUser()
-		if (user == null) {
-			result.success(null)
-			return
+		when (call.method) {
+			"Auth#registerChangeListeners" -> registerChangeListeners(call.arguments())
+			else -> {
+				result.notImplemented()
+				return
+			}
+		}.addOnCompleteListener { task ->
+			if (task.isSuccessful) {
+				result.success(task.result)
+			} else {
+				val exception = task.exception
+				result.error(
+						"firebase_auth",
+						exception?.message,
+						exception
+				)
+			}
 		}
-		val userMap = mapFromUser(user)
-		result.success(userMap)
 	}
 
 	@Suppress("UNCHECKED_CAST")
@@ -138,62 +170,87 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 		auth.signInWithCustomToken(token).addOnCompleteListener(SignInCompleteListener(result, auth))
 	}
 
-	private fun handleStartListeningAuthState(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
-		val handle = nextHandle++
-		val listener = object : AuthStateListener {
-			override fun onAuthStateChanged() {
-				val user: AuthUser? = auth.getUser()
-				val userMap: Map<String, Any>? = mapFromUser(user)
-				val map: MutableMap<String, Any> = mutableMapOf()
-				map["id"] = handle
-				if (userMap != null) {
-					map["user"] = userMap
-				}
-				channel!!.invokeMethod("onAuthStateChanged", map.toImmutableMap())
-			}
-		}
-
-		getAuth(call).addAuthStateListener(listener)
-		authStateListeners?.append(handle, listener)
-		result.success(handle)
-	}
 
 	private fun handleSignOut(call: MethodCall, result: MethodChannel.Result, auth: AuthDataSource) {
 		auth.signOut()
 		result.success(null)
 	}
 
+	private fun registerChangeListeners(arguments: Map<String, Any>): Task<Void?> {
+		return Tasks.call(
+				cachedThreadPool,
+				Callable<Void> {
+					val appName = arguments[Constants.APP_NAME] as String
+					val firebaseAuth: AuthDataSource = getAuth(arguments)
+
+					val authStateListener: AuthStateListener? = authStateListeners?.get(appName)
+					val idTokenListener: IdTokenListener? = idTokenListeners?.get(appName)
+
+					val event: MutableMap<String, Any?> = HashMap()
+					event[Constants.APP_NAME] = appName
+
+					if (authStateListener == null) {
+						val newAuthStateListener = object : AuthStateListener {
+							override fun onAuthStateChanged() {
+								val user: AuthUser? = firebaseAuth.getUser()
+								if (user == null) {
+									event[Constants.USER] = null
+								} else {
+									event[Constants.USER] = parseFirebaseUser(user)
+								}
+
+								channel!!.invokeMethod("Auth#authStateChanges", event, getMethodChannelResultHandler("Auth#authStateChanges"))
+							}
+						}
+						firebaseAuth.addAuthStateListener(newAuthStateListener)
+						authStateListeners?.put(appName, newAuthStateListener)
+					}
+					if (idTokenListener == null) {
+						val newIdTokenChangeListener = IdTokenListener { auth ->
+							val user: AuthUser? = firebaseAuth.getUser()
+							if (user == null) {
+								event[Constants.USER] = null
+							} else {
+								event[Constants.USER] = parseFirebaseUser(user)
+							}
+							channel!!.invokeMethod(
+									"Auth#idTokenChanges",
+									event,
+									getMethodChannelResultHandler("Auth#idTokenChanges"))
+						}
+						firebaseAuth.addIdTokenListener(newIdTokenChangeListener)
+						idTokenListeners?.put(appName, newIdTokenChangeListener)
+					}
+					null
+				})
+	}
+
 	companion object {
 
-		private fun mapFromUser(user: AuthUser?): Map<String, Any>? {
-			return if (user != null) {
-				val providerData: MutableList<Map<String, Any?>> = mutableListOf()
-				user.providerInfo?.keys?.forEach { providerKey ->
-					providerData.add(mapOf(
-							"providerId" to providerKey,
-							"uid" to (user.providerInfo.getValue(providerKey) as? List<*>)?.get(0)
-					))
-				}
-				val userMap = userInfoToMap(user)
-
-				userMap["isAnonymous"] = user.isAnonymous
-				userMap["providerData"] = providerData.toImmutableList()
-				return userMap.toImmutableMap()
-			} else {
-				null
+		private fun parseFirebaseUser(firebaseUser: AuthUser?): Map<String, Any?>? {
+			if (firebaseUser == null) {
+				return null
 			}
+			val output: MutableMap<String, Any?> = HashMap()
+			output[Constants.DISPLAY_NAME] = firebaseUser.name
+			output[Constants.EMAIL] = firebaseUser.email
+			output[Constants.EMAIL_VERIFIED] = firebaseUser.emailVerified
+			output[Constants.IS_ANONYMOUS] = firebaseUser.isAnonymous
+			output[Constants.PHOTO_URL] = firebaseUser.picture
+			output[Constants.PROVIDER_DATA] = parseUserInfoList(firebaseUser.providerInfo)
+			output[Constants.UID] = firebaseUser.uid
+			return output
 		}
 
-
-		private fun userInfoToMap(userInfo: AuthUser): MutableMap<String, Any> {
-			val map: MutableMap<String, Any> = mutableMapOf()
-			map["providerId"] = userInfo.providerId ?: "custom"
-			map["uid"] = userInfo.uid
-			userInfo.name?.let { map["displayName"] = it }
-			userInfo.picture?.let { map["photoUrl"] = it }
-			userInfo.email?.let { map["email"] = it }
-			userInfo.emailVerified?.let { map["isEmailVerified"] = it }
-			return map
+		private fun parseUserInfoList(providerInfo: Map<String, Any>?): List<Map<String, Any?>> {
+			val providerData: MutableList<Map<String, Any?>> = mutableListOf()
+			providerInfo?.keys?.forEach { providerKey ->
+				providerData.add(mapOf(
+						Constants.PROVIDER_ID to providerKey,
+						Constants.UID to (providerInfo[providerKey] as? List<*>)?.get(0)
+				))
+			}
+			return providerData.toImmutableList()
 		}
 	}
 
@@ -204,7 +261,7 @@ class FirebaseRestAuthPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 				result.error(exception::class.java.simpleName, exception.localizedMessage, null);
 			} else {
 				val user: AuthUser? = auth.getUser()
-				val userMap: Map<String, Any>? = mapFromUser(user)
+				val userMap: Map<String, Any?>? = parseFirebaseUser(user)
 				val map: MutableMap<String, Any?> = mutableMapOf()
 				map["user"] = userMap
 				result.success(map.toImmutableMap())

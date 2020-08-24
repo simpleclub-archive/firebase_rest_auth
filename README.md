@@ -84,7 +84,7 @@ firebase_auth:
       ref: firebase-rest-auth
 ```
 
-*A simple, pre-forked implementation is available at [simpleclub-exteded/flutterfire](https://github.com/simpleclub-extended/flutterfire/tree/firebase-auth/firebase-rest-auth), branch `firebase-auth/firebase-rest-auth`*
+*A simple, pre-forked implementation is available at [simpleclub-extended/flutterfire](https://github.com/simpleclub-extended/flutterfire/tree/firebase-auth/firebase-rest-auth), branch `firebase-auth/firebase-rest-auth`*
 
 ## Limitations
 

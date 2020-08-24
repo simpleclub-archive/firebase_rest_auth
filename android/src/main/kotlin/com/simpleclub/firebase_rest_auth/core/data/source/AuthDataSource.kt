@@ -2,6 +2,7 @@ package com.simpleclub.firebase_rest_auth.core.data.source
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.internal.IdTokenListener
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenRequest
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithEmailResponse
@@ -10,7 +11,9 @@ import com.simpleclub.firebase_rest_auth.framework.impl.AuthDataSourceImpl
 
 interface AuthDataSource {
 	fun addAuthStateListener(authStateListener: AuthStateListener)
+	fun addIdTokenListener(idTokenListener: IdTokenListener)
 	fun removeAuthStateListener(authStateListener: AuthStateListener)
+	fun removeIdTokenListener(authStateListener: IdTokenListener)
 	fun signInWithCustomToken(token: String): Task<SignInWithCustomTokenResponse>
 	fun signInWithEmail(email: String, password: String): Task<SignInWithEmailResponse>
 	fun signInWithCredential(credential: Any): Task<*>

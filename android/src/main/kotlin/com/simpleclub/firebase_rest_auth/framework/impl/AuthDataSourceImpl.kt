@@ -12,7 +12,7 @@ import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
 class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 
 	private val mRestAuth = FirebaseRestAuth.getInstance(app)
-	private val idTokenListeners = mutableMapOf<AuthDataSource.AuthStateListener, IdTokenListener>()
+	private val idTokenListeners = mutableMapOf<Any, IdTokenListener>()
 
 	override fun addAuthStateListener(authStateListener: AuthDataSource.AuthStateListener) {
 		idTokenListeners[authStateListener] = IdTokenListener {
@@ -21,8 +21,19 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 		mRestAuth.addIdTokenListener(idTokenListeners[authStateListener]!!)
 	}
 
+	override fun addIdTokenListener(idTokenListener: IdTokenListener) {
+		idTokenListeners[idTokenListener] = IdTokenListener {
+			idTokenListener.onIdTokenChanged(it)
+		}
+		mRestAuth.addIdTokenListener(idTokenListeners[idTokenListener]!!)
+	}
+
 	override fun removeAuthStateListener(authStateListener: AuthDataSource.AuthStateListener) {
 		idTokenListeners[authStateListener]?.let { mRestAuth.removeIdTokenListener(it) }
+	}
+
+	override fun removeIdTokenListener(idTokenListener: IdTokenListener) {
+		idTokenListeners[idTokenListener]?.let { mRestAuth.removeIdTokenListener(it) }
 	}
 
 	override fun signInWithCustomToken(token: String): Task<SignInWithCustomTokenResponse> {
