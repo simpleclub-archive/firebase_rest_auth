@@ -98,7 +98,6 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 		return Tasks.call(
 				cachedThreadPool,
 				Callable<Void> {
-					removeEventListeners()
 					null
 				}
 		)
@@ -191,13 +190,13 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 					val appName = arguments[Constants.APP_NAME] as String
 					val auth: AuthDataSource = getAuth(arguments)
 
-					val authStateListener: AuthStateListener? = authStateListeners?.get(appName)
+					var authStateListener: AuthStateListener? = authStateListeners?.get(appName)
 
 					val event: MutableMap<String, Any?> = HashMap()
 					event[Constants.APP_NAME] = appName
 
 					if (authStateListener == null) {
-						val newAuthStateListener = object : AuthStateListener {
+						authStateListener = object : AuthStateListener {
 							override fun onAuthStateChanged() {
 								val user: AuthUser? = auth.getUser()
 								if (user == null) {
@@ -211,10 +210,12 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 								}
 							}
 						}
-						auth.addAuthStateListener(newAuthStateListener)
-						if (auth.getUser() != null) newAuthStateListener.onAuthStateChanged()
-						authStateListeners?.put(appName, newAuthStateListener)
+						auth.addAuthStateListener(authStateListener)
+						authStateListeners?.put(appName, authStateListener)
 					}
+					FirebaseRestAuthPlugin
+					if (auth.getUser() != null) authStateListener.onAuthStateChanged()
+
 					null
 				}
 		)
@@ -222,18 +223,18 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 
 	companion object {
 
-		private fun parseFirebaseUser(firebaseUser: AuthUser?): Map<String, Any?>? {
-			if (firebaseUser == null) {
+		private fun parseFirebaseUser(user: AuthUser?): Map<String, Any?>? {
+			if (user == null) {
 				return null
 			}
 			val output: MutableMap<String, Any?> = HashMap()
-			output[Constants.DISPLAY_NAME] = firebaseUser.name
-			output[Constants.EMAIL] = firebaseUser.email
-			output[Constants.EMAIL_VERIFIED] = firebaseUser.emailVerified
-			output[Constants.IS_ANONYMOUS] = firebaseUser.isAnonymous
-			output[Constants.PHOTO_URL] = firebaseUser.picture
-			output[Constants.PROVIDER_DATA] = parseUserInfoList(firebaseUser.providerInfo)
-			output[Constants.UID] = firebaseUser.uid
+			output[Constants.DISPLAY_NAME] = user.name
+			output[Constants.EMAIL] = user.email
+			output[Constants.EMAIL_VERIFIED] = user.emailVerified
+			output[Constants.IS_ANONYMOUS] = user.isAnonymous
+			output[Constants.PHOTO_URL] = user.picture
+			output[Constants.PROVIDER_DATA] = parseUserInfoList(user.providerInfo)
+			output[Constants.UID] = user.uid
 			return output
 		}
 
