@@ -1,6 +1,7 @@
 package com.simpleclub.firebase_rest_auth.framework.rest
 
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.Keep
 import androidx.lifecycle.Lifecycle
@@ -18,7 +19,7 @@ class FirebaseTokenRefresher(val auth: FirebaseRestAuth) :
     private var failureRetryTimeSecs: Long = MIN_RETRY_BACKOFF_SECS
     private var lastToken: String? = null
 
-    private val handler: Handler = Handler()
+    private val handler: Handler = Handler(Looper.getMainLooper())
     private val refreshRunnable: Runnable = object : Runnable {
         override fun run() {
             val user = auth.currentUser

@@ -94,11 +94,11 @@ therefore it currently shares the same limitations as described in the disclaime
 
 Implemented methods of `firebase_auth` are:
 
-* `currentUser()`
 * `signInWithCustomToken({@required String token})`
-* `signInWithEmailAndPassword({@required String email, @required String password})`
 * `get onAuthStateChanged`
 * `signOut()`
+
+A lot of methods such as `currentUser()` are internally implemented and need no custom override.
 
 **You are more than welcome to contribute and extend the plugins functionality.**
 

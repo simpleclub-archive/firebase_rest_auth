@@ -21,19 +21,8 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 		mRestAuth.addIdTokenListener(idTokenListeners[authStateListener]!!)
 	}
 
-	override fun addIdTokenListener(idTokenListener: IdTokenListener) {
-		idTokenListeners[idTokenListener] = IdTokenListener {
-			idTokenListener.onIdTokenChanged(it)
-		}
-		mRestAuth.addIdTokenListener(idTokenListeners[idTokenListener]!!)
-	}
-
 	override fun removeAuthStateListener(authStateListener: AuthDataSource.AuthStateListener) {
 		idTokenListeners[authStateListener]?.let { mRestAuth.removeIdTokenListener(it) }
-	}
-
-	override fun removeIdTokenListener(idTokenListener: IdTokenListener) {
-		idTokenListeners[idTokenListener]?.let { mRestAuth.removeIdTokenListener(it) }
 	}
 
 	override fun signInWithCustomToken(token: String): Task<SignInWithCustomTokenResponse> {

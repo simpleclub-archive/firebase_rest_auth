@@ -11,9 +11,7 @@ import com.simpleclub.firebase_rest_auth.framework.impl.AuthDataSourceImpl
 
 interface AuthDataSource {
 	fun addAuthStateListener(authStateListener: AuthStateListener)
-	fun addIdTokenListener(idTokenListener: IdTokenListener)
 	fun removeAuthStateListener(authStateListener: AuthStateListener)
-	fun removeIdTokenListener(authStateListener: IdTokenListener)
 	fun signInWithCustomToken(token: String): Task<SignInWithCustomTokenResponse>
 	fun signInWithEmail(email: String, password: String): Task<SignInWithEmailResponse>
 	fun signInWithCredential(credential: Any): Task<*>
