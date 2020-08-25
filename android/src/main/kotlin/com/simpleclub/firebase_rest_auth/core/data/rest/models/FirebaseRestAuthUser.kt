@@ -35,7 +35,7 @@ class FirebaseRestAuthUser(
 	}
 
 	override fun toString(): String {
-		return "FirebaseRestAuthUser(idToken='$idToken', refreshToken='$refreshToken', isAnonymous=$isAnonymous, userId='$userId', expirationTime=$expirationTime, name='$name', picture='$picture', email='$email', emailVerified=$emailVerified, providerId='$providerId', providerInfo=$providerInfo)"
+		return "FirebaseRestAuthUser(idToken='[REDACTED]', refreshToken='[REDACTED]', isAnonymous=$isAnonymous, userId='$userId', expirationTime=$expirationTime, name='$name', picture='$picture', email='$email', emailVerified=$emailVerified, providerId='$providerId', providerInfo=$providerInfo)"
 	}
 
 

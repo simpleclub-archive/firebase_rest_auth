@@ -84,7 +84,7 @@ firebase_auth:
       ref: firebase-rest-auth
 ```
 
-*A simple, pre-forked implementation is available at [simpleclub-exteded/flutterfire](https://github.com/simpleclub-extended/flutterfire/tree/firebase-auth/firebase-rest-auth), branch `firebase-auth/firebase-rest-auth`*
+*A simple, pre-forked implementation is available at [simpleclub-extended/flutterfire](https://github.com/simpleclub-extended/flutterfire/tree/firebase-auth/firebase-rest-auth), branch `firebase-auth/firebase-rest-auth`*
 
 ## Limitations
 
@@ -94,11 +94,12 @@ therefore it currently shares the same limitations as described in the disclaime
 
 Implemented methods of `firebase_auth` are:
 
-* `currentUser()`
+* `signInAnonymously()`
 * `signInWithCustomToken({@required String token})`
-* `signInWithEmailAndPassword({@required String email, @required String password})`
 * `get onAuthStateChanged`
 * `signOut()`
+
+A lot of methods such as `currentUser()` are internally implemented and need no custom override.
 
 **You are more than welcome to contribute and extend the plugins functionality.**
 

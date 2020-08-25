@@ -12,7 +12,7 @@ import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
 class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 
 	private val mRestAuth = FirebaseRestAuth.getInstance(app)
-	private val idTokenListeners = mutableMapOf<AuthDataSource.AuthStateListener, IdTokenListener>()
+	private val idTokenListeners = mutableMapOf<Any, IdTokenListener>()
 
 	override fun addAuthStateListener(authStateListener: AuthDataSource.AuthStateListener) {
 		idTokenListeners[authStateListener] = IdTokenListener {
@@ -31,6 +31,10 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 
 	override fun signInWithEmail(email: String, password: String): Task<SignInWithEmailResponse> {
 		return mRestAuth.signInWithEmail(email, password)
+	}
+
+	override fun signInAnonymously(): Task<*> {
+		return mRestAuth.signInAnonymously()
 	}
 
 	override fun signInWithCredential(credential: Any): Task<*> {
