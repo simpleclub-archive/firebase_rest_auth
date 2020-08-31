@@ -145,6 +145,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 			"Auth#signInWithCustomToken" -> signInWithCustomToken(call.arguments())
 			"Auth#signInAnonymously" -> signInAnonymously(call.arguments())
 			"Auth#signOut" -> signOut(call.arguments())
+			"User#getIdToken" -> getIdToken(call.arguments())
 			else -> {
 				result.notImplemented()
 				return
@@ -221,6 +222,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 								}
 
 								Handler(Looper.getMainLooper()).post {
+									channel!!.invokeMethod("Auth#idTokenChanges", event, getMethodChannelResultHandler("Auth#idTokenChanges"))
 									channel!!.invokeMethod("Auth#authStateChanges", event, getMethodChannelResultHandler("Auth#authStateChanges"))
 								}
 							}
@@ -234,6 +236,27 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 					null
 				}
 		)
+	}
+
+	private fun getIdToken(arguments: Map<String, Any>): Task<Map<String, Any?>> {
+		return Tasks.call(
+				cachedThreadPool,
+				Callable call@{
+					val auth = getAuth(arguments);
+					// val forceRefresh = arguments[Constants.FORCE_REFRESH] as? Boolean ?: false
+					val tokenOnly = arguments[Constants.TOKEN_ONLY] as Boolean
+					if (auth.getUser() == null) {
+						throw IllegalStateException("Login before requesting the IdToken")
+					}
+					val token: Any? = auth.getIdToken();
+					if (tokenOnly) {
+						return@call mapOf(
+								Constants.TOKEN to token
+						);
+					} else {
+						throw UnsupportedOperationException("Only token only requests are supported")
+					}
+				})
 	}
 
 	companion object {

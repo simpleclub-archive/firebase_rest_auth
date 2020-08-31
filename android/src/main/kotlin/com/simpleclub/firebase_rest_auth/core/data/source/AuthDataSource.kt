@@ -18,11 +18,11 @@ interface AuthDataSource {
 	fun signInWithEmail(email: String, password: String): Task<SignInWithEmailResponse>
 	fun signInWithCredential(credential: Any): Task<*>
 	fun signInAnonymously(): Task<SignInAnonymouslyResponse>
+	fun getIdToken(): String?
 	fun signOut()
 	fun getUser(): AuthUser?
-	fun setUser(user: FirebaseRestAuthUser?)
 
-	suspend fun getIdToken(): String?
+	fun setUser(user: FirebaseRestAuthUser?)
 
 	companion object {
 		private val INSTANCE = mutableMapOf<String, AuthDataSource>()

@@ -66,7 +66,7 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 		mRestAuth.currentUser = user;
 	}
 
-	override suspend fun getIdToken(): String? {
+	override fun getIdToken(): String? {
 		return mRestAuth.currentUser?.idToken
 	}
 
