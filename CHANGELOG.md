@@ -1,3 +1,9 @@
+## 0.2.1
+
+* Fix: Bug where the current user was not set before returning success.
+* New Basic functionality:
+    * `getIdToken()`
+
 ## 0.2.0
 
 * Complete rewrite to support the new FlutterFire structure.
