@@ -4,6 +4,8 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.internal.IdTokenListener
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuth
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuthUser
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInAnonymouslyResponse
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithCustomTokenResponse
 import com.simpleclub.firebase_rest_auth.core.data.rest.models.identitytoolkit.SignInWithEmailResponse
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
@@ -33,7 +35,7 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 		return mRestAuth.signInWithEmail(email, password)
 	}
 
-	override fun signInAnonymously(): Task<*> {
+	override fun signInAnonymously(): Task<SignInAnonymouslyResponse> {
 		return mRestAuth.signInAnonymously()
 	}
 
@@ -58,6 +60,10 @@ class AuthDataSourceImpl(app: FirebaseApp) : AuthDataSource {
 					providerInfo = it.providerInfo
 			)
 		}
+	}
+
+	override fun setUser(user: FirebaseRestAuthUser?) {
+		mRestAuth.currentUser = user;
 	}
 
 	override suspend fun getIdToken(): String? {

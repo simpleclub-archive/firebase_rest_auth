@@ -11,6 +11,7 @@ import androidx.annotation.Nullable
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuthUser
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource.AuthStateListener
 import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
@@ -178,8 +179,9 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				cachedThreadPool,
 				Callable {
 					val auth = getAuth(arguments)
-					Tasks.await(auth.signInAnonymously())
-					parseAuthResult(auth)
+					val response = Tasks.await(auth.signInAnonymously())
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken, isAnonymous = true))
+					parseAuthResult(auth.getUser())
 				}
 		)
 	}
@@ -189,8 +191,9 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				cachedThreadPool,
 				Callable {
 					val auth = getAuth(arguments)
-					Tasks.await(auth.signInWithCustomToken(arguments[Constants.TOKEN] as String))
-					parseAuthResult(auth)
+					val response = Tasks.await(auth.signInWithCustomToken(arguments[Constants.TOKEN] as String))
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken, isAnonymous = false))
+					parseAuthResult(auth.getUser())
 				}
 		)
 	}
@@ -261,10 +264,10 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 			return providerData.toImmutableList()
 		}
 
-		private fun parseAuthResult(auth: AuthDataSource): Map<String, Any?> {
-			val output: MutableMap<String, Any?> = HashMap()
-			output[Constants.USER] = parseFirebaseUser(auth.getUser())
-			return output
+		private fun parseAuthResult(user: AuthUser?): Map<String, Any?> {
+			return mapOf(
+					Constants.USER to parseFirebaseUser(user)
+			)
 		}
 
 		private val TAG = FirebaseRestAuthPlugin::class.java.simpleName
