@@ -11,6 +11,7 @@ import androidx.annotation.Nullable
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
+import com.simpleclub.firebase_rest_auth.core.data.rest.models.FirebaseRestAuthUser
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource
 import com.simpleclub.firebase_rest_auth.core.data.source.AuthDataSource.AuthStateListener
 import com.simpleclub.firebase_rest_auth.core.domain.user.AuthUser
@@ -144,6 +145,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 			"Auth#signInWithCustomToken" -> signInWithCustomToken(call.arguments())
 			"Auth#signInAnonymously" -> signInAnonymously(call.arguments())
 			"Auth#signOut" -> signOut(call.arguments())
+			"User#getIdToken" -> getIdToken(call.arguments())
 			else -> {
 				result.notImplemented()
 				return
@@ -178,8 +180,9 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				cachedThreadPool,
 				Callable {
 					val auth = getAuth(arguments)
-					Tasks.await(auth.signInAnonymously())
-					parseAuthResult(auth)
+					val response = Tasks.await(auth.signInAnonymously())
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken, isAnonymous = true))
+					parseAuthResult(auth.getUser())
 				}
 		)
 	}
@@ -189,8 +192,9 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				cachedThreadPool,
 				Callable {
 					val auth = getAuth(arguments)
-					Tasks.await(auth.signInWithCustomToken(arguments[Constants.TOKEN] as String))
-					parseAuthResult(auth)
+					val response = Tasks.await(auth.signInWithCustomToken(arguments[Constants.TOKEN] as String))
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken, isAnonymous = false))
+					parseAuthResult(auth.getUser())
 				}
 		)
 	}
@@ -218,6 +222,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 								}
 
 								Handler(Looper.getMainLooper()).post {
+									channel!!.invokeMethod("Auth#idTokenChanges", event, getMethodChannelResultHandler("Auth#idTokenChanges"))
 									channel!!.invokeMethod("Auth#authStateChanges", event, getMethodChannelResultHandler("Auth#authStateChanges"))
 								}
 							}
@@ -231,6 +236,27 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 					null
 				}
 		)
+	}
+
+	private fun getIdToken(arguments: Map<String, Any>): Task<Map<String, Any?>> {
+		return Tasks.call(
+				cachedThreadPool,
+				Callable call@{
+					val auth = getAuth(arguments);
+					// val forceRefresh = arguments[Constants.FORCE_REFRESH] as? Boolean ?: false
+					val tokenOnly = arguments[Constants.TOKEN_ONLY] as Boolean
+					if (auth.getUser() == null) {
+						throw IllegalStateException("Login before requesting the IdToken")
+					}
+					val token: Any? = auth.getIdToken();
+					if (tokenOnly) {
+						return@call mapOf(
+								Constants.TOKEN to token
+						);
+					} else {
+						throw UnsupportedOperationException("Only token only requests are supported")
+					}
+				})
 	}
 
 	companion object {
@@ -261,10 +287,10 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 			return providerData.toImmutableList()
 		}
 
-		private fun parseAuthResult(auth: AuthDataSource): Map<String, Any?> {
-			val output: MutableMap<String, Any?> = HashMap()
-			output[Constants.USER] = parseFirebaseUser(auth.getUser())
-			return output
+		private fun parseAuthResult(user: AuthUser?): Map<String, Any?> {
+			return mapOf(
+					Constants.USER to parseFirebaseUser(user)
+			)
 		}
 
 		private val TAG = FirebaseRestAuthPlugin::class.java.simpleName
