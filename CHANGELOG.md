@@ -1,3 +1,7 @@
+## 0.2.1+1
+
+* Fix: Added `proguard-rules.pro` to disable unused file removal for the plugin in relase mode.
+
 ## 0.2.1
 
 * Fix: Bug where the current user was not set before returning success.
