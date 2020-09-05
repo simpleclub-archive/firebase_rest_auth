@@ -78,7 +78,7 @@ class RestAuthProviderImpl(app: FirebaseApp, apiKey: String = app.options.apiKey
 						SignInAnonymouslyRequest()
 				)
 		).addOnSuccessListener { res ->
-			this.currentUser = FirebaseRestAuthUser(res.idToken, res.refreshToken, isAnonymous = true)
+			this.currentUser = FirebaseRestAuthUser(res.idToken, res.refreshToken)
 		}.addOnFailureListener { e ->
 			Log.e(TAG, "signInAnonymously: failed", e)
 			this.currentUser = null
@@ -152,8 +152,6 @@ class RestAuthProviderImpl(app: FirebaseApp, apiKey: String = app.options.apiKey
 	}
 
 	override fun getAccessToken(forceRefresh: Boolean): Task<GetTokenResult> {
-		Log.d(TAG, "getAccessToken($forceRefresh)")
-
 		val source = TaskCompletionSource<GetTokenResult>()
 		val user = this.currentUser
 

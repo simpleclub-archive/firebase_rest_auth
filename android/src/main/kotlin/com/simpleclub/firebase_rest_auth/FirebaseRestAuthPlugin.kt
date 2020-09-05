@@ -181,7 +181,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				Callable {
 					val auth = getAuth(arguments)
 					val response = Tasks.await(auth.signInAnonymously())
-					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken, isAnonymous = true))
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken))
 					parseAuthResult(auth.getUser())
 				}
 		)
@@ -193,7 +193,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				Callable {
 					val auth = getAuth(arguments)
 					val response = Tasks.await(auth.signInWithCustomToken(arguments[Constants.TOKEN] as String))
-					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken, isAnonymous = false))
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken))
 					parseAuthResult(auth.getUser())
 				}
 		)

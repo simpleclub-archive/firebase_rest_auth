@@ -1,3 +1,8 @@
+## 0.2.1+2
+
+* Fix: Ensure Anonymous Users get correctly reported from `UserStorage` 
+
+
 ## 0.2.1+1
 
 * Fix: Added `proguard-rules.pro` to disable unused file removal for the plugin in relase mode.
