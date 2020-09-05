@@ -100,7 +100,8 @@ Implemented methods of `firebase_auth` are:
 * `getIdToken()`
 * `signOut()`
 
-A lot of methods such as `currentUser()` are internally implemented by the flutter instance and need no custom override.
+A lot of methods such as `currentUser` are internally implemented by the Flutter instance and need no custom override.
+
 
 **You are more than welcome to contribute and extend the plugins functionality.**
 
