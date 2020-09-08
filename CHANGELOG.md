@@ -1,3 +1,7 @@
+## 0.3.0
+* New Basic functionality:
+    * `signInWithEmailAndPassword({@required String email, @required String password})`
+
 ## 0.2.1+2
 
 * Fix: Ensure Anonymous Users get correctly reported from `UserStorage` 
