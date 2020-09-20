@@ -96,6 +96,7 @@ Implemented methods of `firebase_auth` are:
 
 * `signInAnonymously()`
 * `signInWithCustomToken({@required String token})`
+* `signInWithEmailAndPassword({@required String email, @required String password})`
 * `get onAuthStateChanged`
 * `getIdToken()`
 * `signOut()`

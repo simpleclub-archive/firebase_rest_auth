@@ -142,6 +142,7 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 
 		when (call.method) {
 			"Auth#registerChangeListeners" -> registerChangeListeners(call.arguments())
+			"Auth#signInWithEmailAndPassword" -> signInWithEmailAndPassword(call.arguments())
 			"Auth#signInWithCustomToken" -> signInWithCustomToken(call.arguments())
 			"Auth#signInAnonymously" -> signInAnonymously(call.arguments())
 			"Auth#signOut" -> signOut(call.arguments())
@@ -181,6 +182,18 @@ class FirebaseRestAuthPlugin : FlutterFirebasePlugin, MethodCallHandler, Flutter
 				Callable {
 					val auth = getAuth(arguments)
 					val response = Tasks.await(auth.signInAnonymously())
+					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken))
+					parseAuthResult(auth.getUser())
+				}
+		)
+	}
+
+	private fun signInWithEmailAndPassword(arguments: Map<String, Any>): Task<Map<String, Any?>> {
+		return Tasks.call(
+				cachedThreadPool,
+				Callable {
+					val auth = getAuth(arguments)
+					val response = Tasks.await(auth.signInWithEmail(arguments[Constants.EMAIL] as String, arguments[Constants.PASSWORD] as String))
 					auth.setUser(FirebaseRestAuthUser(response.idToken, response.refreshToken))
 					parseAuthResult(auth.getUser())
 				}
