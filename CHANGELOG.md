@@ -1,3 +1,6 @@
+## Discontinued & Deprecated
+See README.md for further details.
+
 ## 0.3.0
 * New Basic functionality:
     * `signInWithEmailAndPassword({@required String email, @required String password})`

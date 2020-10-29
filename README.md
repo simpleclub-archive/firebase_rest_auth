@@ -1,5 +1,27 @@
 # firebase_rest_auth
 
+## Discontinued & Deprecated
+
+This package is discontinued & deprecated in favor of the changes to `com.google.firebase:firebase-auth:20.0.0`,
+[now supporting devices without Google Play services](https://firebase.google.com/support/release-notes/android#auth_v20-0-0)
+
+Until the Firebase BoM (Bill of Materials) version `26.0.0` is rolled out to [flutterfire](https://github.com/FirebaseExtended/flutterfire),
+it is possible to force integrate the library via `app/build.grade` :
+
+```
+dependencies {
+  implementation ('com.google.firebase:firebase-auth') {
+    version {
+      strictly '20.0.0'
+    }
+  }
+}
+```
+
+Thank you to all contributors who helped with the project!
+
+--- 
+
 [![pub package](https://img.shields.io/pub/v/firebase_rest_auth.svg)](https://pub.dartlang.org/packages/firebase_rest_auth)
 
 > Notice: The plugin is currently in development. See Limitations below for supported features. 
